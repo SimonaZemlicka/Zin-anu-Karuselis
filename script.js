@@ -14,7 +14,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const trashItems = [
     { src: "partika1.png", type: "m1" },
     { src: "partika2.png", type: "m1" },
-    { src: "partika3.png", type: "m1" }
+    { src: "partika3.png", type: "m1" },
+    { src: "stikls1.png", type: "m2" },
+    { src: "stikls2.png", type: "m2" },
+    { src: "stikls3.png", type: "m2" },
+    { src: "metals1.png", type: "m3" },
+    { src: "metals2.png", type: "m3" },
+    { src: "metals3.png", type: "m3" },
+    { src: "plast1.png", type: "m4" },
+    { src: "plast2.png", type: "m4" },
+    { src: "plast3.png", type: "m4" },
+    { src: "papirs1.png", type: "m5" },
+    { src: "papirs2.png", type: "m5" },
+    { src: "papirs3.png", type: "m5" },
+    { src: "bat1.png", type: "m6" },
+    { src: "bat2.png", type: "m6" },
+    { src: "bat3.png", type: "m6" }
   ];
 
   shuffleArray(trashItems);
@@ -26,11 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function updateProgress() {
+    progressFill.style.width = `${(score / trashItems.length) * 100}%`;
+  }
+
   function loadNextTrash() {
     trashHolder.innerHTML = "";
 
     if (currentTrashIndex >= trashItems.length) {
-      trashHolder.innerHTML = `<h1 style='text-align: center;'>🎉 Visi atkritumi sašķiroti!</h1><p style='text-align: center;'>Tu ieguvi <strong>${score}</strong> punktus no <strong>${trashItems.length}</strong>.</p>`;
+      trashHolder.innerHTML = `<div style='text-align: center; font-size: 2rem;'>🎉 Visi atkritumi sašķiroti!<br>Tu ieguvi <strong>${score}</strong> punktus no <strong>${trashItems.length}</strong>.</div>`;
       return;
     }
 
@@ -72,6 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function endDrag() {
     if (draggedOriginal) {
       currentTrashIndex++;
+      score++;
+      updateProgress();
       loadNextTrash();
     }
 
