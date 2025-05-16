@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const progressIcon = document.getElementById("progressIcon");
 
   // Noņem burkānu no punktu joslas ikonas
-  progressIcon.innerHTML = ""; // Ja tur bija emoji vai <img>
-  progressIcon.style.backgroundImage = "none"; // Ja tur bija CSS fons
+  progressIcon.innerHTML = "";
+  progressIcon.style.backgroundImage = "none";
 
   const backgroundMusic = new Audio('speles_skana.mp3');
   backgroundMusic.volume = 0.2;
@@ -39,10 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentTrashIndex = 0;
   let score = 0;
-  let draggedOriginal = null;
-  let draggedGhost = null;
-  let startLeft = "";
-  let startTop = "";
 
   const trashItems = [
     { src: "partika1.png", type: "m1" },
@@ -62,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { src: "papirs3.png", type: "m5" },
     { src: "bat1.png", type: "m6" },
     { src: "bat2.png", type: "m6" },
-    { src: "bat3.png", type: "m6" },
+    { src: "bat3.png", type: "m6" }
   ];
 
   shuffleArray(trashItems);
@@ -76,15 +72,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function loadNextTrash() {
-    trashHolder.innerHTML = "";
+    trashHolder.querySelectorAll(".trash-item").forEach(item => item.remove());
 
     if (currentTrashIndex >= trashItems.length) {
-      trashHolder.innerHTML = 
+      trashHolder.innerHTML = `
         <div class="final-message">
           <h1>🎉 Visi atkritumi sašķiroti!</h1>
           <p>Tu ieguvi <span class="big-score">${score}</span> punktus no <span class="big-score">${trashItems.length}</span>.</p>
         </div>
-      ;
+      `;
       return;
     }
 
@@ -104,121 +100,4 @@ document.addEventListener("DOMContentLoaded", () => {
     img.addEventListener("touchstart", startDrag, { passive: false });
   }
 
-  function startDrag(e) {
-    e.preventDefault();
-    draggedOriginal = e.target;
-
-    startLeft = draggedOriginal.style.left;
-    startTop = draggedOriginal.style.top;
-
-    draggedOriginal.style.opacity = "0.5";
-
-    draggedGhost = draggedOriginal.cloneNode(true);
-    draggedGhost.style.opacity = "1";
-    draggedGhost.style.position = "fixed";
-    draggedGhost.style.left = "0px";
-    draggedGhost.style.top = "0px";
-    draggedGhost.style.transform = "translate(-50%, -50%)";
-    draggedGhost.style.pointerEvents = "none";
-    draggedGhost.style.zIndex = "10000";
-
-    document.body.appendChild(draggedGhost);
-
-    moveGhost(e);
-
-    document.addEventListener("mousemove", dragMove);
-    document.addEventListener("mouseup", endDrag);
-    document.addEventListener("touchmove", dragMove, { passive: false });
-    document.addEventListener("touchend", endDrag);
-  }
-
-  function moveGhost(e) {
-    if (!draggedGhost) return;
-
-    const clientX = e.type.startsWith("touch") ? e.touches[0].clientX : e.clientX;
-    const clientY = e.type.startsWith("touch") ? e.touches[0].clientY : e.clientY;
-
-    draggedGhost.style.left = ${clientX}px;
-    draggedGhost.style.top = ${clientY}px;
-  }
-
-  function dragMove(e) {
-    e.preventDefault();
-    moveGhost(e);
-  }
-
-  function endDrag() {
-    if (!draggedGhost) return;
-
-    const trashType = draggedOriginal.dataset.type;
-    const itemRect = draggedGhost.getBoundingClientRect();
-    let matched = false;
-    let matchedBin = null;
-
-    bins.forEach((bin) => {
-      const binRect = bin.getBoundingClientRect();
-      const binType = bin.getAttribute("src").replace(".png", "");
-
-      const overlap = !(
-        itemRect.right < binRect.left ||
-        itemRect.left > binRect.right ||
-        itemRect.bottom < binRect.top ||
-        itemRect.top > binRect.bottom
-      );
-
-      if (overlap && trashType === binType) {
-        matched = true;
-        matchedBin = bin;
-      }
-    });
-
-    if (matched && matchedBin) {
-      score++;
-      currentTrashIndex++;
-      scoreDisplay.textContent = score;
-
-      const progress = (score / trashItems.length) * 100;
-      progressFill.style.width = ${progress}%;
-      progressIcon.style.left = ${progress}%;
-
-      const holderRect = trashHolder.getBoundingClientRect();
-      const binRect = matchedBin.getBoundingClientRect();
-      const centerX = binRect.left + binRect.width / 2;
-      const trashZoneY = holderRect.top + 40;
-
-      const relativeCenterX = centerX - holderRect.left;
-      const relativeCenterY = trashZoneY - holderRect.top;
-
-      draggedOriginal.style.position = "absolute";
-      draggedOriginal.style.left = ${relativeCenterX}px;
-      draggedOriginal.style.top = ${relativeCenterY}px;
-      draggedOriginal.style.transform = "translate(-50%, -50%) scale(1.1)";
-      draggedOriginal.style.transition = "all 0.3s ease";
-
-      setTimeout(() => {
-        draggedOriginal.style.transform = "translate(-50%, -50%) scale(1)";
-      }, 300);
-
-      draggedGhost.remove();
-      draggedGhost = null;
-      draggedOriginal = null;
-
-      loadNextTrash();
-    } else {
-      draggedOriginal.style.opacity = "1";
-      draggedOriginal.style.left = startLeft;
-      draggedOriginal.style.top = startTop;
-      draggedOriginal.style.transform = "translate(-50%, -50%)";
-
-      draggedGhost.remove();
-      draggedGhost = null;
-      draggedOriginal = null;
-    }
-
-    document.removeEventListener("mousemove", dragMove);
-    document.removeEventListener("mouseup", endDrag);
-    document.removeEventListener("touchmove", dragMove);
-    document.removeEventListener("touchend", endDrag);
-  }
 });
-
