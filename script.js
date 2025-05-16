@@ -19,21 +19,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let soundEnabled = true;
 
-  const muteButton = document.createElement("button");
-  muteButton.className = "btn mute-btn";
-  muteButton.innerHTML = "🔊 Ieslēgt skaņu";
-  document.body.appendChild(muteButton);
+  // Pārbauda, vai eksistē .button-wrapper
+  const buttonWrapper = document.querySelector(".button-wrapper");
+  if (buttonWrapper) {
+    const muteButton = document.createElement("button");
+    muteButton.className = "btn mute-btn";
+    muteButton.innerHTML = "🔊 Ieslēgt skaņu";
+    buttonWrapper.appendChild(muteButton);
 
-  muteButton.addEventListener("click", () => {
-    soundEnabled = !soundEnabled;
-    if (soundEnabled) {
-      backgroundMusic.play();
-      muteButton.innerHTML = "🔇 Izslēgt skaņu";
-    } else {
-      backgroundMusic.pause();
-      muteButton.innerHTML = "🔊 Ieslēgt skaņu";
-    }
-  });
+    muteButton.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      if (soundEnabled) {
+        backgroundMusic.play();
+        muteButton.innerHTML = "🔇 Izslēgt skaņu";
+      } else {
+        backgroundMusic.pause();
+        muteButton.innerHTML = "🔊 Ieslēgt skaņu";
+      }
+    });
+  } else {
+    console.error("Skaņas pogas konteiners (.button-wrapper) nav atrasts!");
+  }
 
   backgroundMusic.play();
 
