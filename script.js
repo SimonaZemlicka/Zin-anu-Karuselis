@@ -34,31 +34,17 @@ document.addEventListener("DOMContentLoaded", () => {
     { src: "bat3.png", type: "m6" }
   ];
 
-  // ✅ Advanced Image Preloading with Error Handling
-  const preloadImages = () => {
-    let loadedImages = 0;
-    const totalImages = trashItems.length;
+  preloadImages();
 
+  function preloadImages() {
     trashItems.forEach(item => {
       const img = new Image();
       img.src = item.src;
-
-      img.onload = () => {
-        loadedImages++;
-        if (loadedImages === totalImages) {
-          shuffleArray(trashItems);
-          loadNextTrash();
-        }
-      };
-
-      img.onerror = () => {
-        console.error(`Failed to load image: ${item.src}. Retrying...`);
-        img.src = `${item.src}?cache-bust=${Date.now()}`; // Retry with cache-bust
-      };
     });
-  };
+  }
 
-  preloadImages();
+  shuffleArray(trashItems);
+  loadNextTrash();
 
   function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -99,11 +85,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     draggedOriginal.style.opacity = "0.5";
 
-    if (!draggedGhost) {
-      draggedGhost = draggedOriginal.cloneNode(true);
-      draggedGhost.classList.add("ghost");
-      document.body.appendChild(draggedGhost);
-    }
+    if (draggedGhost) draggedGhost.remove();
+
+    draggedGhost = draggedOriginal.cloneNode(true);
+    draggedGhost.className = "ghost";
+    draggedGhost.style.position = "absolute";
+    draggedGhost.style.left = "0px";
+    draggedGhost.style.top = "0px";
+    draggedGhost.style.pointerEvents = "none";
+    draggedGhost.style.zIndex = "10000";
+
+    document.body.appendChild(draggedGhost);
 
     moveGhost(e);
 
@@ -127,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     draggedGhost.remove();
     draggedGhost = null;
-    draggedOriginal = null;
+    draggedOriginal.style.opacity = "1";
 
     currentTrashIndex++;
     loadNextTrash();
