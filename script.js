@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const bins = document.querySelectorAll(".bin");
   const scoreDisplay = document.getElementById("score");
   const progressFill = document.getElementById("progressFill");
-  const progressIcon = document.getElementById("progressIcon");
 
   let currentTrashIndex = 0;
   let score = 0;
