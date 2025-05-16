@@ -45,8 +45,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function loadNextTrash() {
+    trashHolder.innerHTML = "";
+
     if (currentTrashIndex >= trashItems.length) {
-      trashHolder.innerHTML = `<div class="final-message" style="text-align:center;">🎉 Visi atkritumi sašķiroti!<br>Tu ieguvi <strong>${score}</strong> punktus no <strong>${trashItems.length}</strong>.</div>`;
+      trashHolder.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
+          <h1>🎉 Visi atkritumi sašķiroti!</h1>
+          <p>Tu ieguvi <strong>${score}</strong> punktus no <strong>${trashItems.length}</strong>.</p>
+        </div>
+      `;
       return;
     }
 
@@ -60,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
     img.style.top = "50%";
     img.style.transform = "translate(-50%, -50%)";
 
-    trashHolder.innerHTML = "";
     trashHolder.appendChild(img);
 
     img.addEventListener("mousedown", startDrag);
@@ -76,27 +82,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     draggedOriginal.style.opacity = "0.5";
 
-    if (!draggedGhost) {
-      draggedGhost = draggedOriginal.cloneNode(true);
-      draggedGhost.classList.add("ghost");
-      document.body.appendChild(draggedGhost);
-    }
+    draggedGhost = draggedOriginal.cloneNode(true);
+    draggedGhost.style.opacity = "1";
+    draggedGhost.style.position = "fixed";
+    draggedGhost.style.left = "0px";
+    draggedGhost.style.top = "0px";
+    draggedGhost.style.transform = "translate(-50%, -50%)";
+    draggedGhost.style.pointerEvents = "none";
+    draggedGhost.style.zIndex = "10000";
+
+    document.body.appendChild(draggedGhost);
 
     moveGhost(e);
 
     document.addEventListener("mousemove", dragMove);
     document.addEventListener("mouseup", endDrag);
-    document.addEventListener("touchmove", dragMove);
+    document.addEventListener("touchmove", dragMove, { passive: false });
     document.addEventListener("touchend", endDrag);
   }
 
   function moveGhost(e) {
     if (!draggedGhost) return;
+
     const clientX = e.type.startsWith("touch") ? e.touches[0].clientX : e.clientX;
     const clientY = e.type.startsWith("touch") ? e.touches[0].clientY : e.clientY;
 
     draggedGhost.style.left = `${clientX}px`;
     draggedGhost.style.top = `${clientY}px`;
+  }
+
+  function dragMove(e) {
+    e.preventDefault();
+    moveGhost(e);
   }
 
   function endDrag() {
@@ -105,33 +122,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const trashType = draggedOriginal.dataset.type;
     const itemRect = draggedGhost.getBoundingClientRect();
     let matched = false;
+    let matchedBin = null;
 
     bins.forEach((bin) => {
       const binRect = bin.getBoundingClientRect();
       const binType = bin.getAttribute("src").replace(".png", "");
 
-      if (binRect.left < itemRect.right &&
-          binRect.right > itemRect.left &&
-          binRect.top < itemRect.bottom &&
-          binRect.bottom > itemRect.top &&
-          binType === trashType) {
+      const overlap = !(
+        itemRect.right < binRect.left ||
+        itemRect.left > binRect.right ||
+        itemRect.bottom < binRect.top ||
+        itemRect.top > binRect.bottom
+      );
+
+      if (overlap && trashType === binType) {
         matched = true;
+        matchedBin = bin;
       }
     });
 
-    if (matched) {
+    if (matched && matchedBin) {
       score++;
+      currentTrashIndex++;
       scoreDisplay.textContent = score;
 
       const progress = (score / trashItems.length) * 100;
       progressFill.style.width = `${progress}%`;
+      progressIcon.style.left = `${progress}%`;
     }
 
     draggedGhost.remove();
     draggedGhost = null;
     draggedOriginal = null;
 
-    currentTrashIndex++;
     loadNextTrash();
   }
 });
