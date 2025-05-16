@@ -12,10 +12,26 @@ document.addEventListener("DOMContentLoaded", () => {
   let startLeft = "";
   let startTop = "";
 
+  // Paplašināts atkritumu saraksts
   const trashItems = [
     { src: "partika1.png", type: "m1" },
     { src: "partika2.png", type: "m1" },
-    { src: "partika3.png", type: "m1" }
+    { src: "partika3.png", type: "m1" },
+    { src: "stikls1.png", type: "m2" },
+    { src: "stikls2.png", type: "m2" },
+    { src: "stikls3.png", type: "m2" },
+    { src: "metals1.png", type: "m3" },
+    { src: "metals2.png", type: "m3" },
+    { src: "metals3.png", type: "m3" },
+    { src: "plast1.png", type: "m4" },
+    { src: "plast2.png", type: "m4" },
+    { src: "plast3.png", type: "m4" },
+    { src: "papirs1.png", type: "m5" },
+    { src: "papirs2.png", type: "m5" },
+    { src: "papirs3.png", type: "m5" },
+    { src: "bat1.png", type: "m6" },
+    { src: "bat2.png", type: "m6" },
+    { src: "bat3.png", type: "m6" }
   ];
 
   shuffleArray(trashItems);
@@ -28,10 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateProgress() {
-    progressFill.style.width = `${(score / trashItems.length) * 100}%`;
+    const percent = (score / trashItems.length) * 100;
+    progressFill.style.width = `${percent}%`;
     progressFill.style.visibility = "visible";
     progressFill.style.opacity = "1";
-    progressIcon.style.left = `${(score / trashItems.length) * 100}%`;
+    progressIcon.style.left = `${percent}%`;
   }
 
   function loadNextTrash() {
@@ -39,7 +56,17 @@ document.addEventListener("DOMContentLoaded", () => {
     updateProgress();
 
     if (currentTrashIndex >= trashItems.length) {
-      trashHolder.innerHTML = `<h1>🎉 Visi atkritumi sašķiroti!</h1>`;
+      trashHolder.innerHTML = `
+        <h1>🎉 Visi atkritumi sašķiroti!</h1>
+        <p>Tu ieguvi <span class="big-score">${score}</span> punktus no <span class="big-score">${trashItems.length}</span>.</p>
+        <button id="restartBtn">Sākt no jauna</button>
+      `;
+      document.getElementById("restartBtn").onclick = () => {
+        currentTrashIndex = 0;
+        score = 0;
+        shuffleArray(trashItems);
+        loadNextTrash();
+      };
       return;
     }
 
@@ -48,11 +75,123 @@ document.addEventListener("DOMContentLoaded", () => {
     img.src = trash.src;
     img.className = "trash-item";
     img.setAttribute("data-type", trash.type);
+    img.style.position = "fixed";
+    img.style.left = "50%";
+    img.style.top = "50%";
+    img.style.transform = "translate(-50%, -50%)";
 
     trashHolder.appendChild(img);
 
     img.addEventListener("mousedown", startDrag);
     img.addEventListener("touchstart", startDrag, { passive: false });
+  }
+
+  function startDrag(e) {
+    e.preventDefault();
+    draggedOriginal = e.target;
+
+    startLeft = draggedOriginal.style.left;
+    startTop = draggedOriginal.style.top;
+
+    draggedOriginal.style.opacity = "0.5";
+
+    draggedGhost = draggedOriginal.cloneNode(true);
+    draggedGhost.style.opacity = "1";
+    draggedGhost.style.position = "fixed";
+    draggedGhost.style.left = "0px";
+    draggedGhost.style.top = "0px";
+    draggedGhost.style.transform = "translate(-50%, -50%)";
+    draggedGhost.style.pointerEvents = "none";
+    draggedGhost.style.zIndex = "10000";
+
+    document.body.appendChild(draggedGhost);
+
+    moveGhost(e);
+
+    document.addEventListener("mousemove", dragMove);
+    document.addEventListener("mouseup", endDrag);
+    document.addEventListener("touchmove", dragMove, { passive: false });
+    document.addEventListener("touchend", endDrag);
+  }
+
+  function moveGhost(e) {
+    if (!draggedGhost) return;
+
+    const clientX = e.type.startsWith("touch") ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type.startsWith("touch") ? e.touches[0].clientY : e.clientY;
+
+    draggedGhost.style.left = `${clientX}px`;
+    draggedGhost.style.top = `${clientY}px`;
+  }
+
+  function dragMove(e) {
+    e.preventDefault();
+    moveGhost(e);
+  }
+
+  function endDrag(e) {
+    if (!draggedGhost) return;
+
+    const trashType = draggedOriginal.dataset.type;
+    const itemRect = draggedGhost.getBoundingClientRect();
+    let matched = false;
+    let matchedBin = null;
+
+    bins.forEach((bin) => {
+      const binRect = bin.getBoundingClientRect();
+      const binType = bin.getAttribute("data-type") || bin.getAttribute("src").replace(".png", "");
+
+      const overlap = !(
+        itemRect.right < binRect.left ||
+        itemRect.left > binRect.right ||
+        itemRect.bottom < binRect.top ||
+        itemRect.top > binRect.bottom
+      );
+
+      if (overlap && trashType === binType) {
+        matched = true;
+        matchedBin = bin;
+      }
+    });
+
+    if (matched && matchedBin) {
+      score++;
+      currentTrashIndex++;
+      scoreDisplay.textContent = score;
+
+      const holderRect = trashHolder.getBoundingClientRect();
+      const binRect = matchedBin.getBoundingClientRect();
+      const centerX = binRect.left + binRect.width / 2;
+      const trashZoneY = holderRect.top + 40;
+
+      const relativeCenterX = centerX - holderRect.left;
+      const relativeCenterY = trashZoneY - holderRect.top;
+
+      draggedOriginal.style.position = "absolute";
+      draggedOriginal.style.left = `${relativeCenterX}px`;
+      draggedOriginal.style.top = `${relativeCenterY}px`;
+      draggedOriginal.style.transform = "translate(-50%, -50%) scale(1.1)";
+      draggedOriginal.style.transition = "all 0.3s ease";
+
+      setTimeout(() => {
+        draggedOriginal.style.transform = "translate(-50%, -50%) scale(1)";
+        loadNextTrash();
+      }, 300);
+    } else {
+      draggedOriginal.style.opacity = "1";
+      draggedOriginal.style.left = startLeft;
+      draggedOriginal.style.top = startTop;
+      draggedOriginal.style.transform = "translate(-50%, -50%)";
+    }
+
+    if (draggedGhost) draggedGhost.remove();
+    draggedGhost = null;
+    draggedOriginal = null;
+
+    document.removeEventListener("mousemove", dragMove);
+    document.removeEventListener("mouseup", endDrag);
+    document.removeEventListener("touchmove", dragMove);
+    document.removeEventListener("touchend", endDrag);
   }
 
   loadNextTrash();
