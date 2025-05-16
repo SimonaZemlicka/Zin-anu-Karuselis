@@ -77,14 +77,19 @@ document.addEventListener("DOMContentLoaded", () => {
     startTop = draggedOriginal.style.top;
 
     document.addEventListener("mousemove", dragMove);
+    document.addEventListener("touchmove", dragMove, { passive: false });
     document.addEventListener("mouseup", endDrag);
+    document.addEventListener("touchend", endDrag);
   }
 
   function dragMove(e) {
     e.preventDefault();
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+
     if (draggedOriginal) {
-      draggedOriginal.style.left = `${e.clientX}px`;
-      draggedOriginal.style.top = `${e.clientY}px`;
+      draggedOriginal.style.left = `${x}px`;
+      draggedOriginal.style.top = `${y}px`;
     }
   }
 
@@ -95,13 +100,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let matched = false;
 
     bins.forEach((bin) => {
-      const binType = bin.getAttribute("src").replace(".png", "");
+      const binType = bin.getAttribute("data-type");
       if (trashType === binType) matched = true;
     });
 
     if (matched) {
       score++;
       currentTrashIndex++;
+      scoreDisplay.textContent = score;
       updateProgress();
       loadNextTrash();
     } else {
@@ -111,6 +117,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.removeEventListener("mousemove", dragMove);
     document.removeEventListener("mouseup", endDrag);
+    document.removeEventListener("touchmove", dragMove);
+    document.removeEventListener("touchend", endDrag);
     draggedOriginal = null;
   }
 
