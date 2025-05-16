@@ -89,17 +89,7 @@ body {
   transition: width 0.3s ease;
 }
 
-.progress-icon {
-  position: absolute;
-  top: -25px;
-  transform: translateX(-50%);
-  transition: left 0.4s ease;
-}
 
-.progress-icon img {
-  width: 40px;
-  height: 40px;
-}
 
 .progress-score {
   margin-top: 10px;
