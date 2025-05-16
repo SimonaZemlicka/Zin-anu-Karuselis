@@ -97,7 +97,26 @@ document.addEventListener("DOMContentLoaded", () => {
     document.removeEventListener("touchmove", dragMove);
     document.removeEventListener("touchend", endDrag);
 
-    currentTrashIndex++;
+    const trashType = draggedOriginal.dataset.type;
+    let matched = false;
+
+    bins.forEach((bin) => {
+      const binType = bin.getAttribute("src").replace(".png", "");
+      if (trashType === binType) {
+        matched = true;
+      }
+    });
+
+    if (matched) {
+      score++;
+      currentTrashIndex++;
+      scoreDisplay.textContent = score;
+
+      const progress = (score / trashItems.length) * 100;
+      progressFill.style.width = `${progress}%`;
+      progressIcon.style.left = `${progress}%`;
+    }
+
     loadNextTrash();
   }
 });
