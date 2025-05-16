@@ -25,6 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const muteButton = document.createElement("button");
     muteButton.className = "btn mute-btn";
     muteButton.innerHTML = "🔊 Ieslēgt skaņu";
+
+    // Nodrošina, ka skaņas poga ir vertikāli kopā ar citām pogām
+    muteButton.style.display = "block";
+    muteButton.style.marginTop = "10px";
+
     buttonWrapper.appendChild(muteButton);
 
     muteButton.addEventListener("click", () => {
@@ -114,3 +119,4 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("touchend", end);
   }
 });
+
