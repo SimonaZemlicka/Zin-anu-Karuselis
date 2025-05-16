@@ -48,8 +48,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (currentTrashIndex >= trashItems.length) {
       trashHolder.innerHTML = `
-        <h1>🎉 Visi atkritumi sašķiroti!</h1>
-        <p>Tu ieguvi <strong>${score}</strong> punktus no <strong>${trashItems.length}</strong>.</p>
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
+          <h1>🎉 Visi atkritumi sašķiroti!</h1>
+          <p>Tu ieguvi <strong>${score}</strong> punktus no <strong>${trashItems.length}</strong>.</p>
+        </div>
       `;
       return;
     }
