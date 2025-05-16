@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreDisplay = document.getElementById("score");
   const progressFill = document.getElementById("progressFill");
   const progressIcon = document.getElementById("progressIcon");
+  progressIcon.style.display = "none";
 
   let currentTrashIndex = 0;
   let score = 0;
