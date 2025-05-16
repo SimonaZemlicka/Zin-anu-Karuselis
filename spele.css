@@ -1,0 +1,202 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: white;
+  font-family: 'Century Gothic', sans-serif;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Miskastes rinda */
+.bins {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-bottom: 10px;
+}
+
+.bin {
+  width: 140px;
+  height: auto;
+}
+
+/* Atkritumu zona */
+.trash-zone {
+  width: 100%;
+  height: 270px;
+  background-color: white;
+  border: 3px dashed #bbb;
+  border-radius: 20px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  overflow: visible;
+}
+
+.trash-holder {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Atkritumu attēli */
+.trash-item {
+  width: 180px;
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  cursor: grab;
+  transition: transform 0.2s ease-out, left 0.2s ease-out, top 0.2s ease-out, opacity 0.2s ease-out;
+  z-index: 5;
+}
+
+/* ✅ Progresijas josla */
+.progress-wrapper {
+  width: 90%;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 25px;
+  background-color: #eee;
+  border-radius: 30px;
+  overflow: hidden;
+  margin: 20px auto 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background-color: #4CAF50;
+  border-radius: 30px;
+  transition: width 0.3s ease;
+}
+
+.progress-icon {
+  position: absolute;
+  top: -25px;
+  transform: translateX(-50%);
+  transition: left 0.4s ease;
+}
+
+.progress-icon img {
+  width: 40px;
+  height: 40px;
+}
+
+.progress-score {
+  margin-top: 10px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #1f6f3f;
+}
+
+/* ✅ Pogas */
+.button-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background-color: #247339;
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  font-size: 28px;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn:hover {
+  background-color: #1a5a2d;
+  transform: scale(1.05);
+}
+
+/* ✅ Uzvaras paziņojums */
+.final-message {
+  text-align: center;
+  margin-top: 20px;
+  animation: fadeIn 1s ease;
+}
+
+.final-message h1 {
+  font-size: 2.8rem;
+  color: #1f6f3f;
+  margin-bottom: 15px;
+}
+
+.final-message p {
+  font-size: 2rem;
+  color: #333;
+}
+
+.big-score {
+  font-size: 2.2rem;
+  color: #247339;
+  font-weight: bold;
+}
+
+/* ✅ Fade-in efekts */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ✅ Responsive dizains */
+@media (max-width: 1024px) {
+  .bin {
+    width: 120px;
+  }
+
+  .trash-item {
+    width: 140px;
+  }
+
+  .btn {
+    font-size: 22px;
+    padding: 12px 32px;
+  }
+
+  .progress-icon img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .progress-score {
+    font-size: 1.2rem;
+  }
+
+  .final-message h1 {
+    font-size: 2.2rem;
+  }
+
+  .final-message p {
+    font-size: 1.6rem;
+  }
+
+  .big-score {
+    font-size: 1.8rem;
+  }
+}

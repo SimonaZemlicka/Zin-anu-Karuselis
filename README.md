@@ -1,2 +1,1 @@
-# Zin-anu-Karuselis
-Zināšanu Karuselis
+# JAUNS1
