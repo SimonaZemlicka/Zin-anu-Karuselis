@@ -100,4 +100,40 @@ document.addEventListener("DOMContentLoaded", () => {
     img.addEventListener("touchstart", startDrag, { passive: false });
   }
 
+  function startDrag(e) {
+    const trash = e.target;
+    trash.style.position = "absolute";
+
+    const move = (event) => {
+      const x = event.touches ? event.touches[0].clientX : event.clientX;
+      const y = event.touches ? event.touches[0].clientY : event.clientY;
+      trash.style.left = `${x - 50}px`;
+      trash.style.top = `${y - 50}px`;
+    };
+
+    const end = () => {
+      document.removeEventListener("mousemove", move);
+      document.removeEventListener("touchmove", move);
+
+      checkDrop(trash);
+    };
+
+    document.addEventListener("mousemove", move);
+    document.addEventListener("touchmove", move);
+    document.addEventListener("mouseup", end);
+    document.addEventListener("touchend", end);
+  }
+
+  function checkDrop(trash) {
+    const targetType = trash.getAttribute("data-type");
+    bins.forEach(bin => {
+      if (bin.getAttribute("src").includes(targetType)) {
+        score++;
+        scoreDisplay.textContent = score;
+        currentTrashIndex++;
+        loadNextTrash();
+      }
+    });
+  }
+
 });
