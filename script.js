@@ -9,33 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   progressIcon.innerHTML = ""; // Ja tur bija emoji vai <img>
   progressIcon.style.backgroundImage = "none"; // Ja tur bija CSS fons
 
-  const backgroundMusic = new Audio('speles_skana.mp3');
-  backgroundMusic.volume = 0.2;
 
-  backgroundMusic.addEventListener('ended', function() {
-    this.currentTime = 0;
-    this.play();
-  }, false);
-
-  let soundEnabled = true;
-
-  const muteButton = document.createElement("button");
-  muteButton.className = "btn mute-btn";
-  muteButton.innerHTML = "🔊 Ieslēgt skaņu";
-  document.querySelector(".button-wrapper").appendChild(muteButton);
-
-  muteButton.addEventListener("click", () => {
-    soundEnabled = !soundEnabled;
-    if (soundEnabled) {
-      backgroundMusic.play();
-      muteButton.innerHTML = "🔇 Izslēgt skaņu";
-    } else {
-      backgroundMusic.pause();
-      muteButton.innerHTML = "🔊 Ieslēgt skaņu";
-    }
-  });
-
-  backgroundMusic.play();
 
   let currentTrashIndex = 0;
   let score = 0;
