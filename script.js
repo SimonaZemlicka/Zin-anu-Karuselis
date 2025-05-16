@@ -29,7 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
     buttonWrapper.appendChild(muteButton);
     buttonWrapper.style.display = "flex";
     buttonWrapper.style.flexDirection = "column";
-    buttonWrapper.style.alignItems = "center";
+    buttonWrapper.style.alignItems = "flex-start";
+    muteButton.style.marginTop = "10px";
   }
 
   muteButton.addEventListener("click", () => {
@@ -97,4 +98,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
