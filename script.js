@@ -89,11 +89,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function endDrag() {
-    if (draggedOriginal) {
-      currentTrashIndex++;
+    if (!draggedOriginal) return;
+
+    const trashType = draggedOriginal.dataset.type;
+    let matched = false;
+
+    bins.forEach((bin) => {
+      const binType = bin.getAttribute("src").replace(".png", "");
+      if (trashType === binType) matched = true;
+    });
+
+    if (matched) {
       score++;
+      currentTrashIndex++;
       updateProgress();
       loadNextTrash();
+    } else {
+      draggedOriginal.style.left = startLeft;
+      draggedOriginal.style.top = startTop;
     }
 
     document.removeEventListener("mousemove", dragMove);
