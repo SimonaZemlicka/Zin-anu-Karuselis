@@ -77,37 +77,68 @@ document.addEventListener("DOMContentLoaded", () => {
     startLeft = draggedOriginal.style.left;
     startTop = draggedOriginal.style.top;
 
+    draggedOriginal.style.opacity = "0.5";
+
+    draggedGhost = draggedOriginal.cloneNode(true);
+    draggedGhost.style.opacity = "1";
+    draggedGhost.style.position = "fixed";
+    draggedGhost.style.left = "0px";
+    draggedGhost.style.top = "0px";
+    draggedGhost.style.transform = "translate(-50%, -50%)";
+    draggedGhost.style.pointerEvents = "none";
+    draggedGhost.style.zIndex = "10000";
+
+    document.body.appendChild(draggedGhost);
+
+    moveGhost(e);
+
     document.addEventListener("mousemove", dragMove);
     document.addEventListener("mouseup", endDrag);
-    document.addEventListener("touchmove", dragMove);
+    document.addEventListener("touchmove", dragMove, { passive: false });
     document.addEventListener("touchend", endDrag);
   }
 
-  function dragMove(e) {
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const y = e.touches ? e.touches[0].clientY : e.clientY;
+  function moveGhost(e) {
+    if (!draggedGhost) return;
 
-    draggedOriginal.style.left = `${x - 50}px`;
-    draggedOriginal.style.top = `${y - 50}px`;
+    const clientX = e.type.startsWith("touch") ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type.startsWith("touch") ? e.touches[0].clientY : e.clientY;
+
+    draggedGhost.style.left = `${clientX}px`;
+    draggedGhost.style.top = `${clientY}px`;
+  }
+
+  function dragMove(e) {
+    e.preventDefault();
+    moveGhost(e);
   }
 
   function endDrag() {
-    document.removeEventListener("mousemove", dragMove);
-    document.removeEventListener("mouseup", endDrag);
-    document.removeEventListener("touchmove", dragMove);
-    document.removeEventListener("touchend", endDrag);
+    if (!draggedGhost) return;
 
     const trashType = draggedOriginal.dataset.type;
+    const itemRect = draggedGhost.getBoundingClientRect();
     let matched = false;
+    let matchedBin = null;
 
     bins.forEach((bin) => {
+      const binRect = bin.getBoundingClientRect();
       const binType = bin.getAttribute("src").replace(".png", "");
-      if (trashType === binType) {
+
+      const overlap = !(
+        itemRect.right < binRect.left ||
+        itemRect.left > binRect.right ||
+        itemRect.bottom < binRect.top ||
+        itemRect.top > binRect.bottom
+      );
+
+      if (overlap && trashType === binType) {
         matched = true;
+        matchedBin = bin;
       }
     });
 
-    if (matched) {
+    if (matched && matchedBin) {
       score++;
       currentTrashIndex++;
       scoreDisplay.textContent = score;
@@ -116,6 +147,10 @@ document.addEventListener("DOMContentLoaded", () => {
       progressFill.style.width = `${progress}%`;
       progressIcon.style.left = `${progress}%`;
     }
+
+    draggedGhost.remove();
+    draggedGhost = null;
+    draggedOriginal = null;
 
     loadNextTrash();
   }
